@@ -9,10 +9,10 @@ export class Personne {
   id: string;
 
   @Field()
-  @Column()
+  @Column({ length: 25, nullable: false })
   nom: string;
 
   @Field()
-  @Column()
+  @Column({ length: 25, nullable: false })
   prenom: string;
 }
