@@ -48,12 +48,12 @@ type Query {
 }
 
 type Mutation {
-  createPersonne(createPersonneInput: CreatePersonneInput!): Personne!
+  createPersonne(createPersonneInput: PersonneInput!): Personne!
   updatePersonne(updatePersonneInput: UpdatePersonneInput!): Personne!
   removePersonne(id: Int!): Personne!
-  createMedecin(createMedecinInput: CreateMedecinInput!): Medecin!
-  updateMedecin(updateMedecinInput: UpdateMedecinInput!): Medecin!
-  removeMedecin(id: Int!): Medecin!
+  createMedecin(input: MedecinInput!): Medecin!
+  updateMedecin(input: UpdateMedecinInput!): Medecin!
+  removeMedecin(id: Int!): Boolean!
   createPatient(createPatientInput: CreatePatientInput!): Patient!
   updatePatient(updatePatientInput: UpdatePatientInput!): Patient!
   removePatient(id: Int!): Patient!
@@ -68,25 +68,25 @@ type Mutation {
   removePrescription(id: Int!): Prescription!
 }
 
-input CreatePersonneInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input PersonneInput {
+  nom: String!
+  prenom: String!
 }
 
 input UpdatePersonneInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  nom: String
+  prenom: String
   id: Int!
 }
 
-input CreateMedecinInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input MedecinInput {
+  matricule: String!
+  personne: PersonneInput!
 }
 
 input UpdateMedecinInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  matricule: String
+  personne: PersonneInput
   id: Int!
 }
 

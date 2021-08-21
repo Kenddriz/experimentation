@@ -13,7 +13,7 @@ import { Consultation } from '../consultation/consultation.entity';
 @Entity({ name: 'patients' })
 export class Patient {
   @Field()
-  @PrimaryColumn({ name: 'num_ss' })
+  @PrimaryColumn()
   numSS: string;
 
   @Field(() => [Consultation])

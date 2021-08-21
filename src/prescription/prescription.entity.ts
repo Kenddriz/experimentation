@@ -9,6 +9,6 @@ export class Prescription {
   id: number;
 
   @Field()
-  @Column({ type: 'tinytext', nullable: false })
+  @Column({ type: 'text', nullable: false })
   posologie: string;
 }

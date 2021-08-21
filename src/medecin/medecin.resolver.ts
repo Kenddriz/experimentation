@@ -1,16 +1,37 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Int,
+  ResolveField,
+  Root,
+} from '@nestjs/graphql';
 import { MedecinService } from './medecin.service';
 import { Medecin } from './medecin.entity';
-import { CreateMedecinInput } from './dto/create-medecin.input';
+import { MedecinInput } from './dto/medecin.input';
 import { UpdateMedecinInput } from './dto/update-medecin.input';
+import { Personne } from '../personne/personne.entity';
+import { Consultation } from '../consultation/consultation.entity';
+import { ConsultationService } from '../consultation/consultation.service';
+import { DeleteResult } from 'typeorm';
 
 @Resolver(() => Medecin)
 export class MedecinResolver {
-  constructor(private readonly medecinService: MedecinService) {}
+  constructor(
+    private medecinService: MedecinService,
+    private consultationService: ConsultationService,
+  ) {}
 
   @Mutation(() => Medecin)
-  createMedecin(@Args('createMedecinInput') createMedecinInput: CreateMedecinInput) {
-    return this.medecinService.create(createMedecinInput);
+  createMedecin(@Args('input') input: MedecinInput) {
+    const medecin = new Medecin();
+    medecin.matricule = input.matricule;
+    const personne = new Personne();
+    Object.assign(personne, input.personne);
+    personne.id = input.matricule;
+    medecin.personne = personne;
+    return this.medecinService.save(medecin);
   }
 
   @Query(() => [Medecin], { name: 'medecin' })
@@ -24,12 +45,20 @@ export class MedecinResolver {
   }
 
   @Mutation(() => Medecin)
-  updateMedecin(@Args('updateMedecinInput') updateMedecinInput: UpdateMedecinInput) {
-    return this.medecinService.update(updateMedecinInput.id, updateMedecinInput);
+  async updateMedecin(@Args('input') input: UpdateMedecinInput) {
+    const medecin = await this.medecinService.findOne(input.id);
+    return this.medecinService.save(medecin);
   }
 
-  @Mutation(() => Medecin)
-  removeMedecin(@Args('id', { type: () => Int }) id: number) {
-    return this.medecinService.remove(id);
+  @Mutation(() => Boolean)
+  async removeMedecin(@Args('id', { type: () => Int }) id: number) {
+    const remove = await this.medecinService.remove(id);
+    console.log(remove);
+    return true;
+  }
+
+  @ResolveField(() => [Consultation])
+  async consultations(@Root() medecin: Medecin): Promise<Consultation[]> {
+    return this.consultationService.findByMedecin(medecin.matricule);
   }
 }
