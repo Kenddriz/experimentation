@@ -2,81 +2,71 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Personne {
-  id: String!
-  nom: String!
-  prenom: String!
-}
-
 type Patient {
+  id: String!
   numSS: String!
   consultations: [Consultation!]!
   personne: Personne!
+}
+
+type Medicament {
+  id: Float!
+  nomCommercial: String!
+  prescriptions: [Prescription!]!
+}
+
+type Prescription {
+  id: Float!
+  consultation: Consultation!
+  posologie: String!
+  medicament: Medicament!
 }
 
 type Consultation {
   id: String!
   medecin: Medecin!
   patient: Patient!
+  prescriptions: [Prescription!]!
   dateHeure: String!
 }
 
 type Medecin {
+  id: Float!
   matricule: String!
   personne: Personne!
   consultations: [Consultation!]!
 }
 
-type Medicament {
+type Personne {
   id: Float!
-  nomCommercial: String!
-}
-
-type Prescription {
-  id: Float!
-  posologie: String!
+  nom: String!
+  prenom: String!
 }
 
 type Query {
   getHello: String!
-  personne(id: Int!): Personne!
-  medecin(id: Int!): Medecin!
-  patient(id: Int!): Patient!
+  findAllMedecins: [Medecin!]!
+  Patient: [Patient!]!
+  findAllConsultations: [Consultation!]!
   consultation(id: Int!): Consultation!
   medicament(id: Int!): Medicament!
   prescription(id: Int!): Prescription!
 }
 
 type Mutation {
-  createPersonne(createPersonneInput: PersonneInput!): Personne!
-  updatePersonne(updatePersonneInput: UpdatePersonneInput!): Personne!
-  removePersonne(id: Int!): Personne!
+  removePersonne(id: Int!): Boolean!
   createMedecin(input: MedecinInput!): Medecin!
   updateMedecin(input: UpdateMedecinInput!): Medecin!
-  removeMedecin(id: Int!): Boolean!
-  createPatient(createPatientInput: CreatePatientInput!): Patient!
-  updatePatient(updatePatientInput: UpdatePatientInput!): Patient!
-  removePatient(id: Int!): Patient!
-  createConsultation(createConsultationInput: CreateConsultationInput!): Consultation!
+  createPatient(input: PatientInput!): Patient!
+  updatePatient(input: UpdatePatientInput!): Patient!
+  createConsultation(input: ConsultationInput!): Consultation!
   updateConsultation(updateConsultationInput: UpdateConsultationInput!): Consultation!
   removeConsultation(id: Int!): Consultation!
-  createMedicament(createMedicamentInput: CreateMedicamentInput!): Medicament!
-  updateMedicament(updateMedicamentInput: UpdateMedicamentInput!): Medicament!
+  createMedicament(input: MedicamentInput!): Medicament!
+  updateMedicament(input: UpdateMedicamentInput!): Medicament!
   removeMedicament(id: Int!): Medicament!
-  createPrescription(createPrescriptionInput: CreatePrescriptionInput!): Prescription!
   updatePrescription(updatePrescriptionInput: UpdatePrescriptionInput!): Prescription!
   removePrescription(id: Int!): Prescription!
-}
-
-input PersonneInput {
-  nom: String!
-  prenom: String!
-}
-
-input UpdatePersonneInput {
-  nom: String
-  prenom: String
-  id: Int!
 }
 
 input MedecinInput {
@@ -84,52 +74,59 @@ input MedecinInput {
   personne: PersonneInput!
 }
 
+input PersonneInput {
+  nom: String!
+  prenom: String!
+}
+
 input UpdateMedecinInput {
   matricule: String
+  personne: PersonneInput
+  id: String!
+}
+
+input PatientInput {
+  numSS: String!
+  personne: PersonneInput!
+}
+
+input UpdatePatientInput {
+  numSS: String
   personne: PersonneInput
   id: Int!
 }
 
-input CreatePatientInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input ConsultationInput {
+  medecinId: Int!
+  patientId: Int!
+  medicaments: [PrescriptionInput!]!
+  dateHeure: String!
 }
 
-input UpdatePatientInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
-}
-
-input CreateConsultationInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input PrescriptionInput {
+  medicamentId: Int!
+  posologie: String!
 }
 
 input UpdateConsultationInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  medecinId: Int
+  patientId: Int
+  medicaments: [PrescriptionInput!]
+  dateHeure: String
   id: Int!
 }
 
-input CreateMedicamentInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+input MedicamentInput {
+  nomCommercial: String!
 }
 
 input UpdateMedicamentInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  nomCommercial: String
   id: Int!
 }
 
-input CreatePrescriptionInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
 input UpdatePrescriptionInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  medicamentId: Int
+  posologie: String
   id: Int!
 }

@@ -15,10 +15,13 @@ export class MedecinService {
   async findAll(): Promise<Medecin[]> {
     return this.repository.find();
   }
-  async findOne(id: number): Promise<Medecin> {
+  async findOneByMatricule(matricule: string): Promise<Medecin> {
+    return this.repository.findOne({ matricule });
+  }
+  async findOneById(id: number): Promise<Medecin> {
     return this.repository.findOne(id);
   }
-  async remove(id: number): Promise<DeleteResult> {
-    return this.repository.delete(id);
+  async remove(matricule: string): Promise<DeleteResult> {
+    return this.repository.delete({ matricule });
   }
 }

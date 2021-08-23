@@ -28,7 +28,7 @@ import { PatientModule } from './patient/patient.module';
     PatientModule,
     ConsultationModule,
     MedicamentModule,
-    PrescriptionModule,
+    PrescriptionModule
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

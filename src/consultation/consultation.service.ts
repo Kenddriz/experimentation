@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateConsultationInput } from './dto/create-consultation.input';
+import { ConsultationInput } from './dto/consultation.input';
 import { UpdateConsultationInput } from './dto/update-consultation.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Consultation } from './consultation.entity';
@@ -11,21 +11,27 @@ export class ConsultationService {
     @InjectRepository(Consultation)
     private repository: Repository<Consultation>,
   ) {}
-  create(createConsultationInput: CreateConsultationInput) {
-    return 'This action adds a new consultation';
+  async save(consultation: Consultation) {
+    return this.repository.save(consultation);
   }
 
-  findAll() {
-    return `This action returns all consultation`;
+  async findAll(): Promise<Consultation[]> {
+    return this.repository.find();
   }
 
   findOne(id: number) {
     return `This action returns a #${id} consultation`;
   }
-  async findByMedecin(medecinId: string): Promise<Consultation[]> {
+  async findByMedecin(medecinId: number): Promise<Consultation[]> {
     return this.repository
       .createQueryBuilder('c')
       .where('c.medecinId = :medecinId', { medecinId })
+      .getMany();
+  }
+  async findByPatient(patientId: string): Promise<Consultation[]> {
+    return this.repository
+      .createQueryBuilder('c')
+      .where('c.patientId = :patientId', { patientId })
       .getMany();
   }
   update(id: number, updateConsultationInput: UpdateConsultationInput) {

@@ -3,7 +3,6 @@ import {
   Query,
   Mutation,
   Args,
-  Int,
   ResolveField,
   Root,
 } from '@nestjs/graphql';
@@ -14,7 +13,6 @@ import { UpdateMedecinInput } from './dto/update-medecin.input';
 import { Personne } from '../personne/personne.entity';
 import { Consultation } from '../consultation/consultation.entity';
 import { ConsultationService } from '../consultation/consultation.service';
-import { DeleteResult } from 'typeorm';
 
 @Resolver(() => Medecin)
 export class MedecinResolver {
@@ -24,41 +22,28 @@ export class MedecinResolver {
   ) {}
 
   @Mutation(() => Medecin)
-  createMedecin(@Args('input') input: MedecinInput) {
+  async createMedecin(@Args('input') input: MedecinInput) {
     const medecin = new Medecin();
     medecin.matricule = input.matricule;
     const personne = new Personne();
     Object.assign(personne, input.personne);
-    personne.id = input.matricule;
     medecin.personne = personne;
-    return this.medecinService.save(medecin);
+    return await this.medecinService.save(medecin);
   }
 
-  @Query(() => [Medecin], { name: 'medecin' })
-  findAll() {
+  @Query(() => [Medecin])
+  findAllMedecins() {
     return this.medecinService.findAll();
-  }
-
-  @Query(() => Medecin, { name: 'medecin' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.medecinService.findOne(id);
   }
 
   @Mutation(() => Medecin)
   async updateMedecin(@Args('input') input: UpdateMedecinInput) {
-    const medecin = await this.medecinService.findOne(input.id);
+    const medecin = await this.medecinService.findOneByMatricule(input.id);
     return this.medecinService.save(medecin);
   }
 
-  @Mutation(() => Boolean)
-  async removeMedecin(@Args('id', { type: () => Int }) id: number) {
-    const remove = await this.medecinService.remove(id);
-    console.log(remove);
-    return true;
-  }
-
   @ResolveField(() => [Consultation])
-  async consultations(@Root() medecin: Medecin): Promise<Consultation[]> {
-    return this.consultationService.findByMedecin(medecin.matricule);
+  consultations(@Root() medecin: Medecin): Promise<Consultation[]> {
+    return this.consultationService.findByMedecin(medecin.id);
   }
 }

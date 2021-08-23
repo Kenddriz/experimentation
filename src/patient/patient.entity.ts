@@ -1,10 +1,11 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import {
+  Column,
   Entity,
   JoinColumn,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Personne } from '../personne/personne.entity';
 import { Consultation } from '../consultation/consultation.entity';
@@ -13,15 +14,21 @@ import { Consultation } from '../consultation/consultation.entity';
 @Entity({ name: 'patients' })
 export class Patient {
   @Field()
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  id: string;
+
+  @Field()
+  @Column({ unique: true })
   numSS: string;
 
   @Field(() => [Consultation])
-  @OneToMany(() => Consultation, (consultation) => consultation.medecin)
+  @OneToMany(() => Consultation, (consultation) => consultation.medecin, {
+    onDelete: 'CASCADE',
+  })
   consultations: Consultation[];
 
   @Field(() => Personne)
-  @OneToOne(() => Personne)
-  @JoinColumn()
+  @OneToOne(() => Personne, { eager: true, onDelete: 'CASCADE', cascade: true })
+  @JoinColumn({ name: 'personneId' })
   personne: Personne;
 }

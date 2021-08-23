@@ -1,5 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Prescription } from '../prescription/prescription.entity';
 
 @ObjectType()
 @Entity({ name: 'medicaments' })
@@ -9,6 +10,12 @@ export class Medicament {
   id: number;
 
   @Field()
-  @Column({ name: 'nom_commercial' })
+  @Column({ name: 'nomCommercial', length: 25, nullable: false })
   nomCommercial: string;
+
+  @Field(() => [Prescription])
+  @OneToMany(() => Prescription, (pres) => pres.medicament, {
+    onDelete: 'CASCADE',
+  })
+  prescriptions: Prescription[];
 }

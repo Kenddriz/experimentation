@@ -1,8 +1,8 @@
-import { CreateMedicamentInput } from './create-medicament.input';
+import { MedicamentInput } from './medicament.input';
 import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateMedicamentInput extends PartialType(CreateMedicamentInput) {
+export class UpdateMedicamentInput extends PartialType(MedicamentInput) {
   @Field(() => Int)
   id: number;
 }

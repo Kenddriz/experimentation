@@ -1,35 +1,49 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Root,
+} from '@nestjs/graphql';
+import { ConsultationService } from '../consultation/consultation.service';
+import { Personne } from '../personne/personne.entity';
+import { Consultation } from '../consultation/consultation.entity';
 import { PatientService } from './patient.service';
+import { PatientInput } from './dto/patient.input';
 import { Patient } from './patient.entity';
-import { CreatePatientInput } from './dto/create-patient.input';
 import { UpdatePatientInput } from './dto/update-patient.input';
 
 @Resolver(() => Patient)
 export class PatientResolver {
-  constructor(private readonly patientService: PatientService) {}
+  constructor(
+    private patientService: PatientService,
+    private consultationService: ConsultationService,
+  ) {}
 
   @Mutation(() => Patient)
-  createPatient(@Args('createPatientInput') createPatientInput: CreatePatientInput) {
-    return this.patientService.create(createPatientInput);
+  createPatient(@Args('input') input: PatientInput) {
+    const patient = new Patient();
+    patient.numSS = input.numSS;
+    const personne = new Personne();
+    Object.assign(personne, input.personne);
+    patient.personne = personne;
+    return this.patientService.save(patient);
   }
 
-  @Query(() => [Patient], { name: 'patient' })
+  @Query(() => [Patient], { name: 'Patient' })
   findAll() {
     return this.patientService.findAll();
   }
 
-  @Query(() => Patient, { name: 'patient' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.patientService.findOne(id);
+  @Mutation(() => Patient)
+  async updatePatient(@Args('input') input: UpdatePatientInput) {
+    const Patient = await this.patientService.findOneById(input.id);
+    return this.patientService.save(Patient);
   }
 
-  @Mutation(() => Patient)
-  updatePatient(@Args('updatePatientInput') updatePatientInput: UpdatePatientInput) {
-    return this.patientService.update(updatePatientInput.id, updatePatientInput);
-  }
-
-  @Mutation(() => Patient)
-  removePatient(@Args('id', { type: () => Int }) id: number) {
-    return this.patientService.remove(id);
+  @ResolveField(() => [Consultation])
+  consultations(@Root() patient: Patient): Promise<Consultation[]> {
+    return this.consultationService.findByPatient(patient.id);
   }
 }
