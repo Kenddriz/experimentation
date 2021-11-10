@@ -23,7 +23,7 @@ export class Medecin {
 
   @Field(() => Personne)
   @OneToOne(() => Personne, { eager: true, cascade: true, onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'peronneId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'personneId', referencedColumnName: 'id' })
   personne: Personne;
 
   @Field(() => [Consultation])
